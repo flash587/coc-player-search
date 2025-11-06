@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Clash of Clans Player Search</title>
+<style>
+body {font-family:Arial;text-align:center;margin-top:50px;background:#f4f4f4;}
+input,button {padding:10px;font-size:16px;margin:5px;}
+#result {margin-top:30px;background:#fff;padding:20px;border-radius:8px;display:inline-block;box-shadow:0 2px 6px rgba(0,0,0,0.2);}
+</style>
+</head>
+<body>
+<h1>Clash of Clans Player Search</h1>
+<input id="tagInput" placeholder="Enter player tag (e.g. #2PP)" />
+<button onclick="searchPlayer()">Search</button>
+<div id="result"></div>
+<script>
+async function searchPlayer(){
+ const tag=document.getElementById("tagInput").value.trim();
+ if(!tag)return alert("Please enter a player tag!");
+ const r=document.getElementById("result");r.innerHTML="Searching...";
+ try{
+  const res=await fetch(`https://YOUR_RENDER_BACKEND_URL/player/${encodeURIComponent(tag)}`);
+  const data=await res.json();
+  if(data.error){r.innerHTML=`<p style='color:red;'>${data.error}</p>`;return;}
+  r.innerHTML=`<h2>${data.name}</h2>
+  <p>Tag: ${data.tag}</p>
+  <p>Town Hall: ${data.townHallLevel}</p>
+  <p>EXP Level: ${data.expLevel}</p>
+  <p>Clan: ${data.clan}</p>
+  <button onclick="copyName('${data.name}')">Copy Name</button>`;
+ }catch(e){r.innerHTML="<p style='color:red;'>Error fetching data</p>";}
+}
+function copyName(n){navigator.clipboard.writeText(n);alert("Copied player name: "+n);}
+</script>
+</body>
+</html>
